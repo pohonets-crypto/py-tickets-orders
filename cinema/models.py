@@ -94,6 +94,28 @@ class Ticket(models.Model):
                 }
             )
 
+    @staticmethod
+    def validate_ticket(row, seat, cinema_hall, error_class):
+        if not (1 <= row <= cinema_hall.rows):
+            raise error_class(
+                {
+                    "row": (
+                        f"Row number must be in range "
+                        f"[1, {cinema_hall.rows}], not {row}"
+                    )
+                }
+            )
+
+        if not (1 <= seat <= cinema_hall.seats_in_row):
+            raise error_class(
+                {
+                    "seat": (
+                        f"Seat number must be in range "
+                        f"[1, {cinema_hall.seats_in_row}], not {seat}"
+                    )
+                }
+            )
+
     def clean(self):
         Ticket.validate_seat(
             self.seat,

@@ -1,8 +1,13 @@
 from django.db.models import Count
-from rest_framework import viewsets, pagination
+from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 
-from cinema.models import Genre, Actor, CinemaHall, Movie, MovieSession, Order
+from cinema.models import (Genre,
+                           Actor,
+                           CinemaHall,
+                           Movie,
+                           MovieSession,
+                           Order)
 
 from cinema.serializers import (
     GenreSerializer,
@@ -13,7 +18,9 @@ from cinema.serializers import (
     MovieSessionListSerializer,
     MovieDetailSerializer,
     MovieSessionDetailSerializer,
-    MovieListSerializer, OrderSerializer, OrderListSerializer,
+    MovieListSerializer,
+    OrderSerializer,
+    OrderListSerializer,
 )
 
 
@@ -121,7 +128,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if self.action == "list":
             queryset = queryset.prefetch_related(
-                "tickets")
+                "tickets__movie_session__movie",
+                "tickets__movie_session__cinema_hall")
         return queryset
 
     def perform_create(self, serializer):
@@ -131,4 +139,5 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class
         if self.action == "list":
             return OrderListSerializer
+
         return serializer
